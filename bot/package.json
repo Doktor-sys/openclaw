@@ -1,0 +1,14 @@
+{
+  "name": "openclaw-bot",
+  "version": "1.0.0",
+  "description": "OpenClaw Bot for Dashboard integration",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.2",
+    "axios": "^1.6.2"
+  }
+}
