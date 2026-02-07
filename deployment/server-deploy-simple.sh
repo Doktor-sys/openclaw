@@ -9,7 +9,7 @@ set -e
 
 # Configuration
 REPO_URL="https://github.com/Doktor-sys/openclaw.git"
-PROJECT_DIR="/opt/openclaw"
+PROJECT_DIR="$HOME/openclaw"
 FRONTEND_PORT=3000
 BACKEND_PORT=3002
 
