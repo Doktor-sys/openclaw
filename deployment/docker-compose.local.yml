@@ -1,0 +1,31 @@
+services:
+  backend:
+    image: dashboard-backend:latest
+    container_name: openclaw-backend
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - HOST=0.0.0.0
+      - JWT_SECRET=OpenClawDashboard2024Secure!
+    restart: unless-stopped
+
+  frontend:
+    image: dashboard-frontend:latest
+    container_name: openclaw-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:3002/api
+    restart: unless-stopped
+
+  bot:
+    image: dashboard-bot:latest
+    container_name: openclaw-bot
+    environment:
+      - WS_URL=ws://backend:3002
+      - API_URL=http://backend:3002/api
+    depends_on:
+      - backend
+    restart: unless-stopped
