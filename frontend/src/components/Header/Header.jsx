@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
+import { wsService } from '../../services/websocket';
 
 export default function Header() {
   const [user, setUser] = useState(null);
@@ -10,24 +11,36 @@ export default function Header() {
 
   useEffect(() => {
     loadUser();
-    loadBotStatus();
-    const interval = setInterval(loadBotStatus, 10000);
-    return () => clearInterval(interval);
+    wsService.connect();
+    
+    const unsubscribeStatus = wsService.subscribe('bot_status', (status) => {
+      setBotStatus(status.status || 'offline');
+    });
+
+    const unsubscribeOnline = wsService.subscribe('bot_online', () => {
+      setBotStatus('online');
+    });
+
+    const unsubscribeOffline = wsService.subscribe('bot_offline', () => {
+      setBotStatus('offline');
+    });
+
+    const unsubscribeIdle = wsService.subscribe('bot_idle', () => {
+      setBotStatus('idle');
+    });
+
+    return () => {
+      unsubscribeStatus();
+      unsubscribeOnline();
+      unsubscribeOffline();
+      unsubscribeIdle();
+      wsService.disconnect();
+    };
   }, []);
 
   const loadUser = () => {
     const userData = AuthService.getUser();
     setUser(userData);
-  };
-
-  const loadBotStatus = async () => {
-    try {
-      const response = await fetch('http://localhost:3002/api/bot/status');
-      const data = await response.json();
-      setBotStatus(data.status || 'offline');
-    } catch (error) {
-      setBotStatus('offline');
-    }
   };
 
   const handleLogout = () => {
